@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="Author" content="Captain Chen">
+    <meta name="Keywords" content="python editor">
+    <title>Online Editor</title>
+    <script src="./static/jquery-3.6.0.min.js"></script>
+    <script src="./static/codemirror-5.65.3/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="./static/codemirror-5.65.3/lib/codemirror.css">
+    <script src="./static/codemirror-5.65.3/mode/python/python.js"></script>
+    <script src="./static/codemirror-5.65.3/keymap/sublime.js"></script>
+    <link rel="stylesheet" href="./static/codemirror-5.65.3/theme/elegant.css">
+    <link rel="stylesheet" href="./static/layout.css">
+    <link rel="stylesheet" href="./static/element.css">
+    <script>
+        $(document).ready(function () {
+            var myCodeMirror = CodeMirror.fromTextArea($("#yourcode")[0], {
+                mode: "python", // 语言模式
+                //theme: "elegant", // 主题
+                keyMap: "sublime", // 快键键风格
+                lineNumbers: true, // 显示行号
+                smartIndent: true, // 智能缩进
+                indentUnit: 4, // 智能缩进单位为4个空格长度
+                indentWithTabs: true, // 使用制表符进行智能缩进
+                lineWrapping: true, //
+                gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],// 在行槽中添加行号显示器、折叠器、语法检测器
+                foldGutter: true, // 启用行槽中的代码折叠
+                autofocus: true, // 自动聚焦
+                matchBrackets: true, // 匹配结束符号，比如"]、}"
+                autoCloseBrackets: true, // 自动闭合符号
+                styleActiveLine: true, // 显示选中行的样式
+            });
+        });
+    </script>
+</head>
+
+<body class="col-container">
+    <header class="div-top" style="background-color: rgb(221,221,221); height:60px;">
+
+    </header>
+    <div class="div-middle row-container">
+        <div class="div-left" style="background-color: rgb(235,235,235); width:200px;">
+
+        </div>
+        <div class="div-middle col-container" style="background-color: white;">
+            <header class="div-top"
+                style="background-color: white; height:30px; box-shadow: 0px 3px 3px rgb(221,221,221);">
+
+            </header>
+            <div class="div-middle">
+                <div class="code-editor">
+                    <textarea id="yourcode" style="display: none; height:100%;"></textarea>
+                </div>
+            </div>
+            <footer class="div-bottom" style="height:200px; border-top: 2px solid rgb(221,221,221);">
+
+            </footer>
+        </div>
+    </div>
+</body>
+
+</html>
