@@ -1,0 +1,11 @@
+.code-editor {
+    position: relative;
+    padding-top: 5px;
+    height: 100%;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+}
+
+.CodeMirror {
+    height: 100%;
+}
