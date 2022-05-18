@@ -11,7 +11,9 @@
     <link rel="stylesheet" href="./static/codemirror-5.65.3/lib/codemirror.css">
     <script src="./static/codemirror-5.65.3/mode/python/python.js"></script>
     <script src="./static/codemirror-5.65.3/keymap/sublime.js"></script>
-    <link rel="stylesheet" href="./static/codemirror-5.65.3/theme/elegant.css">
+    <script src="./static/codemirror-5.65.3/addon/hint/show-hint.js"></script>
+    <link rel="stylesheet" href="./static/codemirror-5.65.3/addon/hint/show-hint.css">
+    <script src="./static/python-hint.js"></script>
     <link rel="stylesheet" href="./static/layout.css">
     <link rel="stylesheet" href="./static/element.css">
     <!--script src="./static/editor.js"></script>-->
@@ -70,6 +72,7 @@
             refreshFileList();
             myCodeMirror = CodeMirror.fromTextArea($("#yourcode")[0], {
                 mode: "python", // 语言模式
+                version: "3",
                 keyMap: "sublime", // 快键键风格
                 lineNumbers: true, // 显示行号
                 smartIndent: true, // 智能缩进
@@ -82,7 +85,19 @@
                 matchBrackets: true, // 匹配结束符号，比如"]、}"
                 autoCloseBrackets: true, // 自动闭合符号
                 styleActiveLine: true, // 显示选中行的样式
+                showHint: true, // 自动补全
             });
+            CodeMirror.commands.autocomplete = function (cm) {
+                CodeMirror.showHint(cm, CodeMirror.pythonHint);
+            };
+            myCodeMirror.on("keyup", function (cm, event) {
+                //所有的字母和'$','{','.'在键按下之后都将触发⾃动补全
+                if (!cm.state.completionActive &&
+                    ((event.keyCode >= 65 && event.keyCode <= 90) || event.keyCode == 52 || event.keyCode == 219 || event.keyCode == 190)) {
+                        CodeMirror.commands.autocomplete(cm, null, { completeSingle: false });
+                }
+            });
+            //CodeMirror.registerHelper("hintWords", "python", ["hahahah"]);
             $("#btn-newFile").click(function () {
                 if (!confirmDiscard())
                     return;
@@ -103,11 +118,10 @@
 
             });
             $("#btn-run").click(function () {
-                if(fileHasChanged())
+                if (fileHasChanged())
                     alert("请先保存文件");
-                else
-                {
-                    $.post("/runCode", { "fileName": activeFile}, function (ret) {
+                else {
+                    $.post("/runCode", { "fileName": activeFile }, function (ret) {
                         $("#program-output pre").text(ret);
                     });
                 }
@@ -136,7 +150,7 @@
                         alert("保存失败 - 文件已存在");
                 });
             });
-            $("#btn-logout").click(function(){
+            $("#btn-logout").click(function () {
                 window.location.href = "/logout";
             });
         });
