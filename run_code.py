@@ -1,6 +1,7 @@
 import os
 import sys
 import traceback
+import json
 from flask import Flask, request, render_template, session, redirect
 
 class WorkDir():
@@ -17,14 +18,37 @@ class WorkDir():
 
 
 def SetFunctions(app):
+
+    @app.route("/getFileList",methods=("POST",))
+    def getFileList():
+        user_name = session["userName"]
+        with WorkDir(user_name):
+            data=[{"fileName":fileName} for fileName in os.listdir(".\\")]
+        jsonData = json.dumps(data, sort_keys=True,
+                          indent=4, separators=(',', ': '))
+        # print(jsonData)
+        return jsonData
+    
+
+    @app.route("/getFile",methods=("POST",))
+    def getFile():
+        user_name = session["userName"]
+        file_name = request.form["fileName"]
+        with WorkDir(user_name):
+            with open(file_name) as f:
+                content = f.read()
+        return content
+
+
     @app.route("/saveCode",methods=("POST",))
     def saveCode():
         user_name = session["userName"]
         code=request.form["code"]
         file_name = request.form["fileName"]
+        overWrite = request.form["overWrite"]
         
         with WorkDir(user_name):
-            if os.path.exists(file_name):
+            if overWrite=="false" and os.path.exists(file_name):
                 return "file exists"
             with open(file_name,"w") as f:
                 f.write(code)
