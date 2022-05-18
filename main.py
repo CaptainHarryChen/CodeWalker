@@ -5,10 +5,12 @@ from flask import Flask, request, render_template, session, redirect
 
 import user_login
 import run_code
+import FlowChart
 
 app = Flask(__name__)
 user_login.SetFunctions(app)
 run_code.SetFunctions(app)
+FlowChart.SetFunctions(app)
 
 
 if __name__ == "__main__":

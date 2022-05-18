@@ -94,7 +94,7 @@
                 //所有的字母和'$','{','.'在键按下之后都将触发⾃动补全
                 if (!cm.state.completionActive &&
                     ((event.keyCode >= 65 && event.keyCode <= 90) || event.keyCode == 52 || event.keyCode == 219 || event.keyCode == 190)) {
-                        CodeMirror.commands.autocomplete(cm, null, { completeSingle: false });
+                    CodeMirror.commands.autocomplete(cm, null, { completeSingle: false });
                 }
             });
             //CodeMirror.registerHelper("hintWords", "python", ["hahahah"]);
@@ -113,6 +113,8 @@
                 if (confirm("确认删除文件? - " + activeFile)) {
                     $.post("/deleteFile", { "fileName": activeFile }, function (ret) {
                         refreshFileList();
+                        activeFile="";
+                        cacheFile="";
                     });
                 }
 
@@ -150,6 +152,13 @@
                         alert("保存失败 - 文件已存在");
                 });
             });
+            $("#btn-flowChart").click(function () {
+                if (fileHasChanged())
+                    alert("请先保存文件");
+                else {
+                    window.open("/flowchart?fileName=" + activeFile);
+                }
+            });
             $("#btn-logout").click(function () {
                 window.location.href = "/logout";
             });
@@ -181,6 +190,8 @@
                 style="background-color: white; height:30px; box-shadow: 0px 3px 3px rgb(221,221,221);">
                 <button id="btn-run" class="button green absolute-center-col toolbar-button">运行</button>
                 <button id="btn-save" class="button yellow absolute-center-col toolbar-button">保存</button>
+                <button id="btn-flowChart" class="button blue absolute-center-col toolbar-button"
+                    style="width:100px;">生成流程图</button>
             </header>
             <div class="div-middle">
                 <div class="code-editor">
