@@ -2,6 +2,8 @@ import os
 import sys
 import traceback
 import json
+import subprocess
+import io
 from flask import Flask, request, render_template, session, redirect
 
 class WorkDir():
@@ -67,34 +69,19 @@ def SetFunctions(app):
     @app.route("/runCode",methods=("POST",))
     def runCode():
         user_name = session["userName"]
-        code=request.form["code"]
-        print(code)
-        '''
-        if not os.path.exists("tmp"):
-            os.mkdir("tmp")
-        if not os.path.exists(f"tmp\\{user_name}"):
-            os.mkdir(f"tmp\\{user_name}")
-        os.chdir(f"tmp\\{user_name}")
-
-        f1 = open("output","w")
-        oldstdout = sys.stdout
-        oldstderr = sys.stderr
-        sys.stdout = f1
-        sys.stderr = f1
-        try:
-            exec(code)
-        except:
-            traceback.print_exc()
-        finally:
-            sys.stdout = oldstdout
-            sys.stderr = oldstderr
-            f1.close()
-
-            with open("output","r") as f:
-                out = f.read()
-            print(out)
-            os.chdir("..\\..")
-            #return out
-        '''
-        return code
+        file_name=request.form["fileName"]
+        
+        with WorkDir(user_name):
+            proc = subprocess.Popen(f"python {file_name}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=-1)
+            proc.wait()
+            stream_stdout = io.TextIOWrapper(proc.stdout, encoding='utf-8')
+            stream_stderr = io.TextIOWrapper(proc.stderr, encoding='utf-8')
+            
+            str_stdout = str(stream_stdout.read())
+            str_stderr = str(stream_stderr.read())
+            str_stderr = str_stderr.replace(os.getcwd(),".")
+            #print("stdout: " + str_stdout)
+            #print("stderr: " + str_stderr)
+            
+        return str_stdout + str_stderr
     

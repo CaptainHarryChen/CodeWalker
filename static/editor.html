@@ -103,9 +103,14 @@
 
             });
             $("#btn-run").click(function () {
-                $.post("/runCode", { "code": myCodeMirror.getValue() }, function (ret) {
-                    $("#program-output pre").text(ret);
-                });
+                if(fileHasChanged())
+                    alert("请先保存文件");
+                else
+                {
+                    $.post("/runCode", { "fileName": activeFile}, function (ret) {
+                        $("#program-output pre").text(ret);
+                    });
+                }
             });
             $("#btn-save").click(function () {
                 var fileName;
