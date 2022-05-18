@@ -4,9 +4,11 @@ import json
 from flask import Flask, request, render_template, session, redirect
 
 import user_login
+import run_code
 
 app = Flask(__name__)
 user_login.SetFunctions(app)
+run_code.SetFunctions(app)
 
 
 if __name__ == "__main__":
