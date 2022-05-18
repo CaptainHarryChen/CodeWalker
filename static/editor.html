@@ -131,6 +131,9 @@
                         alert("保存失败 - 文件已存在");
                 });
             });
+            $("#btn-logout").click(function(){
+                window.location.href = "/logout";
+            });
         });
     </script>
 </head>
@@ -149,6 +152,9 @@
                 <span class="block-title">文件列表</span>
             </div>
             <div id="file-list" class="div-middle col-container" style="overflow-y: scroll">
+            </div>
+            <div class="div-bottom" style="height:50px;background-color: rgb(232, 242, 255);">
+                <button id="btn-logout" class="button blue absolute-center" style="width:100px;">退出登录</button>
             </div>
         </div>
         <div class="div-middle col-container" style="background-color: white;">
