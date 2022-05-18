@@ -48,7 +48,6 @@ def SetFunctions(app):
 
     @app.route("/logout")
     def logout():
-        cache_msg_id.pop(session["userName"])
         session.clear()
         return redirect("/")
 
