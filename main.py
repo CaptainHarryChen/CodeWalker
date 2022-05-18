@@ -8,9 +8,9 @@ import run_code
 import FlowChart
 
 app = Flask(__name__)
-user_login.SetFunctions(app)
-run_code.SetFunctions(app)
-FlowChart.SetFunctions(app)
+user_login.SetFunctions(app) # 设置用户登录相关功能
+run_code.SetFunctions(app) # 设置python程序相关功能
+FlowChart.SetFunctions(app) # 设置代码转化流程图功能
 
 
 if __name__ == "__main__":
