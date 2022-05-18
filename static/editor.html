@@ -16,16 +16,41 @@
     <link rel="stylesheet" href="./static/element.css">
     <!--script src="./static/editor.js"></script>-->
     <script>
+        var myCodeMirror;
+        var activeFile = "";
+        function addFileCard(fileName) {
+            var str = '<div class="file-card row-container" name="' + fileName + '"><img src="./static/pyicon.png" class="icon"><div class="file-name">' + fileName + '</div></div>';
+            $("#file-list").append(str);
+        }
+
+        function onClickFileCard() {
+            var fileName = $(this).attr("name");
+            //alert(fileName);
+            $(".file-card").removeClass("active");
+            $(this).addClass("active");
+            $.post("/getFile", { "fileName": fileName }, function (ret) {
+                activeFile = fileName;
+                myCodeMirror.setValue(ret);
+            });
+        }
+
         $(document).ready(function () {
+            $(".file-card").click(onClickFileCard);
+            $.post("/getFileList", {}, function (ret) {
+                var data = $.parseJSON(ret);
+                for (i in data) {
+                    addFileCard(data[i]["fileName"]);
+                }
+                $(".file-card").click(onClickFileCard);
+            });
             myCodeMirror = CodeMirror.fromTextArea($("#yourcode")[0], {
                 mode: "python", // 语言模式
-                //theme: "elegant", // 主题
                 keyMap: "sublime", // 快键键风格
                 lineNumbers: true, // 显示行号
                 smartIndent: true, // 智能缩进
                 indentUnit: 4, // 智能缩进单位为4个空格长度
                 indentWithTabs: true, // 使用制表符进行智能缩进
-                lineWrapping: true, //
+                lineWrapping: true, // 自动换行
                 gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],// 在行槽中添加行号显示器、折叠器、语法检测器
                 foldGutter: true, // 启用行槽中的代码折叠
                 autofocus: true, // 自动聚焦
@@ -39,11 +64,22 @@
                 });
             });
             $("#btn-save").click(function () {
-                fileName=prompt("保存文件名：","a.py");
-                $.post("/saveCode", { "code": myCodeMirror.getValue(),"fileName":fileName }, function (ret) {
-                    if(ret=="success")
-                        alert("保存成功");
-                    if(ret=="file exists")
+                var fileName;
+                var overWrite = false;
+                if (activeFile == null || activeFile == "") {
+                    fileName = prompt("保存文件名：", "a.py");
+                    overWrite = false;
+                }
+                else {
+                    fileName = activeFile;
+                    overWrite = true;
+                }
+                if (fileName == null)
+                    return;
+                $.post("/saveCode", { "code": myCodeMirror.getValue(), "fileName": fileName, "overWrite": overWrite }, function (ret) {
+                    if (ret == "success")
+                        alert("保存成功 - 保存为" + fileName);
+                    if (ret == "file exists")
                         alert("保存失败 - 文件已存在");
                 });
             });
@@ -56,8 +92,16 @@
         <p class="absolute-center-col title">Code Walker</p>
     </header>
     <div class="div-middle row-container">
-        <div class="div-left" style="background-color: rgb(235,235,235); width:200px;">
-
+        <div class="div-left col-container" style="background-color: rgb(235,235,235); width:200px;">
+            <div class="div-top row-container" style="height: 30px; box-shadow: 0px 3px 3px rgb(203, 203, 203);">
+                <button id="btn-newFile" class="button green absolute-center-col toolbar-button">新建</button>
+                <button id="btn-delete" class="button yellow absolute-center-col toolbar-button">删除</button>
+            </div>
+            <div class="div-top" style="margin-top:5px;height: 30px; border-bottom: 1px solid rgb(189, 189, 189);">
+                <span class="block-title">文件列表</span>
+            </div>
+            <div id="file-list" class="div-middle col-container" style="overflow-y: scroll">
+            </div>
         </div>
         <div class="div-middle col-container" style="background-color: white;">
             <header class="div-top row-container"

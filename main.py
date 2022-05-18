@@ -12,5 +12,5 @@ run_code.SetFunctions(app)
 
 
 if __name__ == "__main__":
-    app.secret_key = os.urandom(24)
-    app.run(host="0.0.0.0", port=80, debug=True)
+    app.secret_key = 'ca 0c 86 04 98@ 02b 1b7 8c 88] 1b d7"+ e6px@ c3#\\'
+    app.run(host="0.0.0.0", port=80, debug=False)
