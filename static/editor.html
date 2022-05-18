@@ -18,31 +18,56 @@
     <script>
         var myCodeMirror;
         var activeFile = "";
+        var cacheFile = "";
+
+        function fileHasChanged() {
+            curFile = myCodeMirror.getValue();
+            if (activeFile == "" || activeFile == null)
+                return curFile != "";
+            return curFile != cacheFile;
+        }
+        function confirmDiscard() {
+            var discard = true;
+            if (fileHasChanged())
+                discard = confirm("正在编辑的文件未保存，需要丢弃嘛？");
+            return discard;
+        }
+
         function addFileCard(fileName) {
-            var str = '<div class="file-card row-container" name="' + fileName + '"><img src="./static/pyicon.png" class="icon"><div class="file-name">' + fileName + '</div></div>';
+            var isActive = "";
+            if (activeFile == fileName)
+                isActive = " active";
+            var str = '<div class="file-card row-container' + isActive + '" name="' + fileName + '"><img src="./static/pyicon.png" class="icon"><div class="file-name">' + fileName + '</div></div>';
             $("#file-list").append(str);
         }
 
         function onClickFileCard() {
+            if (!confirmDiscard())
+                return;
             var fileName = $(this).attr("name");
             //alert(fileName);
             $(".file-card").removeClass("active");
             $(this).addClass("active");
             $.post("/getFile", { "fileName": fileName }, function (ret) {
                 activeFile = fileName;
+                cacheFile = ret;
                 myCodeMirror.setValue(ret);
             });
         }
 
-        $(document).ready(function () {
-            $(".file-card").click(onClickFileCard);
+        function refreshFileList() {
             $.post("/getFileList", {}, function (ret) {
+                $("#file-list").html("");
                 var data = $.parseJSON(ret);
                 for (i in data) {
                     addFileCard(data[i]["fileName"]);
                 }
                 $(".file-card").click(onClickFileCard);
             });
+        }
+
+        $(document).ready(function () {
+            refreshFileList();
             myCodeMirror = CodeMirror.fromTextArea($("#yourcode")[0], {
                 mode: "python", // 语言模式
                 keyMap: "sublime", // 快键键风格
@@ -57,6 +82,25 @@
                 matchBrackets: true, // 匹配结束符号，比如"]、}"
                 autoCloseBrackets: true, // 自动闭合符号
                 styleActiveLine: true, // 显示选中行的样式
+            });
+            $("#btn-newFile").click(function () {
+                if (!confirmDiscard())
+                    return;
+                $(".file-card").removeClass("active");
+                cacheFile = "";
+                activeFile = "";
+                myCodeMirror.setValue("");
+                refreshFileList();
+            });
+            $("#btn-delete").click(function () {
+                if (activeFile == "")
+                    return;
+                if (confirm("确认删除文件? - " + activeFile)) {
+                    $.post("/deleteFile", { "fileName": activeFile }, function (ret) {
+                        refreshFileList();
+                    });
+                }
+
             });
             $("#btn-run").click(function () {
                 $.post("/runCode", { "code": myCodeMirror.getValue() }, function (ret) {
@@ -77,8 +121,12 @@
                 if (fileName == null)
                     return;
                 $.post("/saveCode", { "code": myCodeMirror.getValue(), "fileName": fileName, "overWrite": overWrite }, function (ret) {
-                    if (ret == "success")
+                    if (ret == "success") {
                         alert("保存成功 - 保存为" + fileName);
+                        activeFile = fileName;
+                        cacheFile = myCodeMirror.getValue();
+                        refreshFileList();
+                    }
                     if (ret == "file exists")
                         alert("保存失败 - 文件已存在");
                 });
