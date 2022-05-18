@@ -14,9 +14,10 @@
     <link rel="stylesheet" href="./static/codemirror-5.65.3/theme/elegant.css">
     <link rel="stylesheet" href="./static/layout.css">
     <link rel="stylesheet" href="./static/element.css">
+    <!--script src="./static/editor.js"></script>-->
     <script>
         $(document).ready(function () {
-            var myCodeMirror = CodeMirror.fromTextArea($("#yourcode")[0], {
+            myCodeMirror = CodeMirror.fromTextArea($("#yourcode")[0], {
                 mode: "python", // 语言模式
                 //theme: "elegant", // 主题
                 keyMap: "sublime", // 快键键风格
@@ -32,30 +33,52 @@
                 autoCloseBrackets: true, // 自动闭合符号
                 styleActiveLine: true, // 显示选中行的样式
             });
+            $("#btn-run").click(function () {
+                $.post("/runCode", { "code": myCodeMirror.getValue() }, function (ret) {
+                    $("#program-output pre").text(ret);
+                });
+            });
+            $("#btn-save").click(function () {
+                fileName=prompt("保存文件名：","a.py");
+                $.post("/saveCode", { "code": myCodeMirror.getValue(),"fileName":fileName }, function (ret) {
+                    if(ret=="success")
+                        alert("保存成功");
+                    if(ret=="file exists")
+                        alert("保存失败 - 文件已存在");
+                });
+            });
         });
     </script>
 </head>
 
 <body class="col-container">
     <header class="div-top" style="background-color: rgb(221,221,221); height:60px;">
-
+        <p class="absolute-center-col title">Code Walker</p>
     </header>
     <div class="div-middle row-container">
         <div class="div-left" style="background-color: rgb(235,235,235); width:200px;">
 
         </div>
         <div class="div-middle col-container" style="background-color: white;">
-            <header class="div-top"
+            <header class="div-top row-container"
                 style="background-color: white; height:30px; box-shadow: 0px 3px 3px rgb(221,221,221);">
-
+                <button id="btn-run" class="button green absolute-center-col toolbar-button">运行</button>
+                <button id="btn-save" class="button yellow absolute-center-col toolbar-button">保存</button>
             </header>
             <div class="div-middle">
                 <div class="code-editor">
                     <textarea id="yourcode" style="display: none; height:100%;"></textarea>
                 </div>
             </div>
-            <footer class="div-bottom" style="height:200px; border-top: 2px solid rgb(221,221,221);">
-
+            <footer class="div-bottom col-container" style="height:200px; border-top: 2px solid rgb(221,221,221);">
+                <header class="div-top" style="height: 25px; border-bottom: 1px solid rgb(194, 194, 194);">
+                    <span class="block-title">运行结果</span>
+                </header>
+                <div class="div-middle">
+                    <div class="content-area" id="program-output" readonly="true">
+                        <pre></pre>
+                    </div>
+                </div>
             </footer>
         </div>
     </div>
