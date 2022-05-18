@@ -38,6 +38,15 @@ def SetFunctions(app):
             with open(file_name) as f:
                 content = f.read()
         return content
+    
+
+    @app.route("/deleteFile",methods=("POST",))
+    def deleteFile():
+        user_name = session["userName"]
+        file_name = request.form["fileName"]
+        with WorkDir(user_name):
+            os.remove(file_name)
+        return ""
 
 
     @app.route("/saveCode",methods=("POST",))
