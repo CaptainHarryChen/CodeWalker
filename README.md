@@ -8,6 +8,10 @@
 
 能够根据python代码生成流程图
 
+效果图：
+
+![editor](E:\CaptainChen\Projects\CodeWalker\doc\editor.png)
+
 ## 作业需求分析
 
 规划需要实现的功能有：
@@ -124,9 +128,11 @@ user: Alice           pwd : 12345
 
 在CaptainChen用户中有```prime.py```代码，输出1~100的质数
 
-可以运行该代码，效果如下左。生成该代码流程图，效果如下右。
+可以运行该代码，生成该代码流程图，效果如下：
 
-<img src=".\doc\prime_run.png" alt="prime_run" style="zoom:40%;" />          <img src="\doc\prime_flowchart.png" alt="prime_flowchart" style="zoom:80%;" />
+<img src=".\doc\prime_run.png" alt="prime_run" style="zoom:40%;" />        
+
+  <img src="\doc\prime_flowchart.png" alt="prime_flowchart" style="zoom:80%;" />
 
 
 
