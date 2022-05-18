@@ -23,12 +23,18 @@
         var cacheFile = "";
 
         function fileHasChanged() {
+            /**
+             * 判断当前文件是否被修改
+             */
             curFile = myCodeMirror.getValue();
             if (activeFile == "" || activeFile == null)
                 return curFile != "";
             return curFile != cacheFile;
         }
         function confirmDiscard() {
+            /**
+             * 确认是否放弃修改文件
+             */
             var discard = true;
             if (fileHasChanged())
                 discard = confirm("正在编辑的文件未保存，需要丢弃嘛？");
@@ -36,6 +42,9 @@
         }
 
         function addFileCard(fileName) {
+            /**
+             * 向文件列表里添加文件
+             */
             var isActive = "";
             if (activeFile == fileName)
                 isActive = " active";
@@ -44,12 +53,18 @@
         }
 
         function onClickFileCard() {
-            if (!confirmDiscard())
-                return;
+            /**
+             * 文件列表里的文件被选中时
+             */
             var fileName = $(this).attr("name");
-            //alert(fileName);
+            if (activeFile == fileName) //点击了当前文件
+                return;
+            if (!confirmDiscard()) // 确认是否丢弃当前被修改的文件
+                return;
+
             $(".file-card").removeClass("active");
             $(this).addClass("active");
+            //获取点击的文件内容
             $.post("/getFile", { "fileName": fileName }, function (ret) {
                 activeFile = fileName;
                 cacheFile = ret;
@@ -58,6 +73,9 @@
         }
 
         function refreshFileList() {
+            /**
+             * 刷新文件列表，重新post获取
+             */
             $.post("/getFileList", {}, function (ret) {
                 $("#file-list").html("");
                 var data = $.parseJSON(ret);
@@ -70,9 +88,10 @@
 
         $(document).ready(function () {
             refreshFileList();
+            // 设置代码编辑区，使用CodeMirror来实现代码高亮，自动补全等功能
             myCodeMirror = CodeMirror.fromTextArea($("#yourcode")[0], {
                 mode: "python", // 语言模式
-                version: "3",
+                version: "3", // python 版本
                 keyMap: "sublime", // 快键键风格
                 lineNumbers: true, // 显示行号
                 smartIndent: true, // 智能缩进
@@ -87,6 +106,7 @@
                 styleActiveLine: true, // 显示选中行的样式
                 showHint: true, // 自动补全
             });
+            // 设置python自动补全器
             CodeMirror.commands.autocomplete = function (cm) {
                 CodeMirror.showHint(cm, CodeMirror.pythonHint);
             };
@@ -97,8 +117,9 @@
                     CodeMirror.commands.autocomplete(cm, null, { completeSingle: false });
                 }
             });
-            //CodeMirror.registerHelper("hintWords", "python", ["hahahah"]);
+
             $("#btn-newFile").click(function () {
+                // 新建文件按钮
                 if (!confirmDiscard())
                     return;
                 $(".file-card").removeClass("active");
@@ -108,18 +129,20 @@
                 refreshFileList();
             });
             $("#btn-delete").click(function () {
+                // 删除文件按钮
                 if (activeFile == "")
                     return;
                 if (confirm("确认删除文件? - " + activeFile)) {
                     $.post("/deleteFile", { "fileName": activeFile }, function (ret) {
                         refreshFileList();
-                        activeFile="";
-                        cacheFile="";
+                        activeFile = "";
+                        cacheFile = "";
                     });
                 }
 
             });
             $("#btn-run").click(function () {
+                // 运行代码按钮
                 if (fileHasChanged())
                     alert("请先保存文件");
                 else {
@@ -129,13 +152,14 @@
                 }
             });
             $("#btn-save").click(function () {
+                // 保存文件代码
                 var fileName;
                 var overWrite = false;
-                if (activeFile == null || activeFile == "") {
+                if (activeFile == null || activeFile == "") { // 该文件是新建的
                     fileName = prompt("保存文件名：", "a.py");
                     overWrite = false;
                 }
-                else {
+                else { // 该文件不是新建的
                     fileName = activeFile;
                     overWrite = true;
                 }
@@ -153,6 +177,7 @@
                 });
             });
             $("#btn-flowChart").click(function () {
+                // 生成流程图按钮
                 if (fileHasChanged())
                     alert("请先保存文件");
                 else {
@@ -160,6 +185,7 @@
                 }
             });
             $("#btn-logout").click(function () {
+                // 登出按钮
                 window.location.href = "/logout";
             });
         });
