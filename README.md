@@ -6,6 +6,8 @@
 
 利用CodeMirror来实现代码高亮
 
+实现了代码自动联想补全
+
 能够根据python代码生成流程图
 
 效果图：
@@ -24,9 +26,9 @@
 
    使用第三方包CodeMirror，解析输入的代码，并自动添加html标签，实现不同颜色实现。
 
-3. **代码自动补全**：能够通过输入的字符，识别可以补全的常用python函数及关键字
+3. **代码自动补全**：能够通过输入的字符，识别可以补全的常用python函数及关键字，以及自定义变量名和函数名
 
-   使用修改后的CodeMirror，添加python-hint.js来联想python的补全
+   使用修改后的CodeMirror，添加python-hint.js来联想python的补全，添加相关代码获取所有已定义的变量和函数进行进一步联想
 
 4. **运行代码显示结果**：能够在网页端运行代码并显示结果
 
@@ -78,7 +80,11 @@ sqlite3
 
 **static/login.css**：登录注册界面样式
 
-static文件夹其余文件均为第三方包的文件
+
+
+**static/python-hint.js**：用于进行python自动补全的javascript代码
+
+static文件夹内其余文件均为第三方包的文件
 
 
 
