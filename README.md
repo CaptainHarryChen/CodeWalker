@@ -10,7 +10,7 @@
 
 效果图：
 
-![editor](E:\CaptainChen\Projects\CodeWalker\doc\editor.png)
+![editor](doc/editor.png)
 
 ## 作业需求分析
 
@@ -130,9 +130,9 @@ user: Alice           pwd : 12345
 
 可以运行该代码，生成该代码流程图，效果如下：
 
-<img src=".\doc\prime_run.png" alt="prime_run" style="zoom:40%;" />        
+<img src="doc/prime_run.png" alt="prime_run" style="zoom:40%;" />        
 
-  <img src="\doc\prime_flowchart.png" alt="prime_flowchart" style="zoom:80%;" />
+  <img src="doc/prime_flowchart.png" alt="prime_flowchart" style="zoom:80%;" />
 
 
 
