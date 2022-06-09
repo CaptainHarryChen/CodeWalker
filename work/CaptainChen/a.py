@@ -1,3 +1,5 @@
+Abs(primes(100))
+
 def Primes(n):
 	if n<=2:
 		return 0

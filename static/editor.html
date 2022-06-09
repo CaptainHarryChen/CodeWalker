@@ -22,6 +22,27 @@
         var activeFile = "";
         var cacheFile = "";
 
+        function spellCheck() {
+            var area = myCodeMirror.getWrapperElement();
+            var spans = area.getElementsByTagName('span');
+            for(i in spans) {
+                var res=false;
+                if(typeof(spans[i].classList) == "undefined")
+                    continue;
+                if(spans[i].textContent.length<=1)
+                    continue;
+                spans[i].classList.remove('maybeWrong');
+                if(spans[i].classList.contains('cm-keywords') ||
+                spans[i].classList.contains('cm-variable') ||
+                spans[i].classList.contains('cm-def')) {
+                    res=CodeMirror.fuzzyCheck(spans[i].textContent);
+                }
+                if(res) {
+                    spans[i].classList.add('maybeWrong');
+                }
+            }
+        }
+
         function fileHasChanged() {
             /**
              * 判断当前文件是否被修改
@@ -69,6 +90,7 @@
                 activeFile = fileName;
                 cacheFile = ret;
                 myCodeMirror.setValue(ret);
+                spellCheck();
             });
         }
 
@@ -171,6 +193,7 @@
                         activeFile = fileName;
                         cacheFile = myCodeMirror.getValue();
                         refreshFileList();
+                        spellCheck();
                     }
                     if (ret == "file exists")
                         alert("保存失败 - 文件已存在");
