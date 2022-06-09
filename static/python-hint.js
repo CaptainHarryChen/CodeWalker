@@ -37,7 +37,7 @@
     context.push(tprop);
     var customCompletion = getCustomCompletions(editor, token, context);
     customCompletion = customCompletion.sort();
-    
+
     completionList = customCompletion.concat(keywordsCompletion);
 
     //prevent autocomplete for last word, instead show dropdown with one word
@@ -71,6 +71,43 @@
     + "dict hex object slice coerce dir id oct sorted intern ";
   var pythonBuiltinsL = pythonBuiltins.split(" ").join("() ").split(" ");
   var pythonBuiltinsU = pythonBuiltins.toUpperCase().split(" ").join("() ").split(" ");
+
+  function minDistance(s1, s2) {
+    var len1 = s1.length
+    var len2 = s2.length
+    var dp = new Array(len1 + 1).fill(0).map(() => Array(len2 + 1).fill(0))
+    for (var i = 0; i <= len1; i++) {
+      dp[i][0] = i
+    }
+    for (var i = 0; i <= len2; i++) {
+      dp[0][i] = i
+    }
+    for (var i = 1; i <= len1; i++) {
+      for (var j = 1; j <= len2; j++) {
+        if (s1[i - 1] == s2[j - 1]) {
+          dp[i][j] = dp[i - 1][j - 1]
+        } else {
+          dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + 1)
+        }
+      }
+    }
+    return dp[len1][len2]
+  };
+
+  function fuzzyCheck(word) {
+    var builtins = pythonBuiltins.split(' ');
+    for(var i in builtins) {
+      if(minDistance(word,builtins[i])==1)
+        return true;
+    }
+    for(var i in pythonKeywordsL) {
+      if(minDistance(word,pythonKeywordsL[i])==1)
+        return true;
+    }
+    return false;
+  }
+
+  CodeMirror.fuzzyCheck=fuzzyCheck;
 
   function getCompletions(token, context) {
     var found = [], start = token.string;
@@ -112,10 +149,10 @@
 
     function gatherCompletions(_obj) {
       var n = editor.lineCount();
-      for(var i=0;i<n;i++) {
+      for (var i = 0; i < n; i++) {
         var tokens = editor.getLineTokens(i);
-        for(var j in tokens) {
-          if(tokens[j].type=="variable" || tokens[j].type=="def") {
+        for (var j in tokens) {
+          if (tokens[j].type == "variable" || tokens[j].type == "def") {
             maybeAdd(tokens[j].string);
           }
         }
